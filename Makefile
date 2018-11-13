@@ -3,7 +3,7 @@ TEXC = pdflatex
 FILE = sbc-template
 FINAL = Jonathas_WSCAD
 
-SRC = imagens/*.png imagens/*.jpg
+SRC = images/*.png images/*.jpg images/*.pdf
 
 .PHONY: all pdf final view viewFinal clean cleanFinal
 
