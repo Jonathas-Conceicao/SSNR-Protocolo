@@ -5,42 +5,78 @@
 \usepackage{listings}
 \usepackage{graphicx,url}
 \usepackage[T1]{fontenc}
-\usepackage{amsmath,amssymb}%,amsthm}
+\usepackage{amsmath,amssymb}
 
 \usepackage[brazil]{babel}
 \usepackage[utf8]{inputenc}
 
-\title{Protocolo RDN}
+\title{Protocolo Simple Remote Notifcation System (SRN)}
 
 \author{
-  Jonathas Augusto de Oliveira Conceição\inst{1}
+	Jonathas Augusto de Oliveira Conceição\inst{1}
 }
 
 \address{
-  Curso de Bacharelado em Ciêncai da Computação\\
-  Universidade Federal de Pelotas (UFPel)
-  \email{jadoliveira@inf.ufpel.edu.br}
+	Curso de Bacharelado em Ciêncai da Computação\\
+	Universidade Federal de Pelotas (UFPel)
+	\email{jadoliveira@inf.ufpel.edu.br}
 }
 
 \begin{document}
 
 \maketitle
 
-\begin{resumo} %% TODO: resumir protocolo
-  Resumo do protocolo
+\begin{resumo}
+	O Simple Remote Notification System (Sistema Simples de Notificação Remota, ou apenas SRN)
+	é um protocolo de notificações distribuída em modelo cliente-servidor.
+	Nele há dois tipos de possíveis clientes, emissores e receptores de notificações.
+	No sistema os clientes se comunicam por meio de um servidor que contem a identificação de casa usuário e,
+	sempre que recebe uma notificação,
+	envia ao destinatário correspondente.
+	Um cliente pode ser apenas emissor ou apenas receptor, simplificando assim a implementação do protocolo em um dispositivo.
 \end{resumo}
 
+%%=========================================================================================
 \section{Introdução}
+%%=========================================================================================
 
-<Visão geral do protocolo>
+O Simple Remote Notification System (Sistema Simples de Notificação Remota, ou apenas SRN)
+é um protocolo de notificações distribuída em modelo cliente-servidor.
+No sistema a comunicação é feita por meio de um servidor que contem a identificação de receptores,
+e por sua vez, repassa a notificação ao destinatário correspondente.
+
+O protocolo define dois tipos de clientes, emissores e receptores de notificações.
+Receptores podem se conectar à um servidor enviando uma mensagem de conexão com o nome desejado.
+Uma vez conetados eles passam a receber notificações de qualquer remetente com acesso aquele servidor que deseje contacta-los.
+Emissores podem enviar mensagens ao servidor requisitando uma lista de clientes conectados,
+e podem também enviar notificações à clientes conectados ao servidor.
+
+O servidor então tem três funcionalidades principais:
+(1) indexar receptores conectados;
+(2) enviar lista dos receptores disponíveis à emissores;
+(3) receber e entregar notificações vinda de um emissor para um receptor válido.
 
 O artigo é organizado da seguinte forma:
 A Seção \ref{sec:MaquinaDeEstados} apresenta as máquinas de estados do cliente emissor, cliente receptor e do servidor;
 na Seção \ref{sec:Mensagens} todos os tipos de mensagens e seus cabeçalhos são apresentados;
 por fim, a Seção \ref{sec:Conclusao} conclui apresentado alguns casos de uso do protocolo.
 
+%%=========================================================================================
 \section{Máquina de Estados}\label{sec:MaquinaDeEstados}
-<Introdução máquinas>
+%%=========================================================================================
+
+Nesta seção são apresentados as máquinas de estado para o
+Cliente Emissor,
+o Cliente Receptor e
+o Servidor.
+Os círculos representam estados do sistema e
+as transações são dadas por dois componentes:
+um evento que pode acontecer;
+e uma ação a ser tomada.
+Os componentes da transição são separados por um traço vertical,
+o evento sempre se encontra acima do traço e
+a ação a ser tomada se encontra abaixo.
+
 \subsection{Cliente Emissor}\label{sec:Emissor}
 <Breve descrição das funcionalidades do cliente emissor>
 %% \begin{figure}%[ht]
@@ -53,9 +89,15 @@ por fim, a Seção \ref{sec:Conclusao} conclui apresentado alguns casos de uso d
 <Breve descrição das funcionalidades do cliente receptor>
 \subsection{Servidor}\label{sec:Servidor}
 <Breve descrição das funcionalidades do servidor>
+
+%%=========================================================================================
 \section{Mensagens}\label{sec:Mensagens}
+%%=========================================================================================
 <Introdução mensagens>
+
+%%=========================================================================================
 \section{Conclusão}\label{sec:Conclusao}
+%%=========================================================================================
 <Exemplos de uso e conclusão>
 
 \end{document}
