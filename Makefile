@@ -1,7 +1,7 @@
 TEXC = pdflatex
 
 FILE = sbc-template
-FINAL = Jonathas_WSCAD
+FINAL = Protocolo_SSNR
 
 SRC = images/*.png images/*.jpg images/*.pdf
 

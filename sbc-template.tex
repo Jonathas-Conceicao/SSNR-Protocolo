@@ -10,7 +10,7 @@
 \usepackage[brazil]{babel}
 \usepackage[utf8]{inputenc}
 
-\title{Protocolo Simple Remote Notifcation System (SRN)}
+\title{Protocolo Sistema Simples de Notificação Remota}
 
 \author{
 	Jonathas Augusto de Oliveira Conceição\inst{1}
@@ -27,7 +27,7 @@
 \maketitle
 
 \begin{resumo}
-	O Simple Remote Notification System é um protocolo de notificações distribuída em modelo cliente-servidor.
+	O Sistema Simples de Notificação Remota é um protocolo de notificações distribuída em modelo cliente-servidor.
 	Nele há dois tipos de possíveis clientes, emissores e receptores de notificações.
 	No sistema os clientes se comunicam por meio de um servidor que contem a identificação de casa receptor e,
 	sempre que recebe uma notificação,
@@ -39,7 +39,7 @@
 \section{Introdução}
 %%=========================================================================================
 
-O Simple Remote Notification System (Sistema Simples de Notificação Remota, ou apenas SRN)
+O Sistema Simples de Notificação Remota
 é um protocolo de notificações distribuída em modelo cliente-servidor.
 No sistema a comunicação é feita por meio de um servidor que contem a identificação de receptores,
 e quando requisitado, repassa a notificação ao destinatário correspondente.
@@ -193,7 +193,7 @@ O campo {\bf Retorno} na {\tt Confirmação} contem 0 caso a conexão seja bem s
 {\bf Retorno} pode assumir os seguintes valores:
 \begin{itemize}
 \item 0 - Conexão bem sucedida no endereço requirido.
-\item 1 - Conexão bem sucedida no endereço informado em {\bf Código Receptor}
+\item 1 - Conexão bem sucedida no endereço retornado em {\bf Código Receptor}
 \item 2 - Conexão recusada, servidor cheio.
 \item 4 - Conexão recusada, servidor lista negra.
 \item 128 - Erro não informado.
@@ -203,7 +203,8 @@ O campo {\bf Retorno} na {\tt Confirmação} contem 0 caso a conexão seja bem s
 \section{Conclusão}\label{sec:Conclusao}
 %%=========================================================================================
 
-O protocolo SRN é um protocolo de notificações distribuídas que permite implementação mais simples de clientes,
+O Sistema Simples de Notificação Remota é um protocolo de notificações distribuídas que
+permite uma implementação simples de clientes,
 especializando-os nas funções de emissor ou receptor.
 Aplicações que disponham de mais robustez podem implementar ambos os protocolos de cliente se assim desejarem.
 
