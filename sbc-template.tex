@@ -110,7 +110,7 @@ a Figura \ref{fig:Servidor} apresenta sua máquina de estados.
 \begin{figure}%[ht]
 	\centering
 	\includegraphics[width=1\textwidth]{images/Protocolo_Servidor.pdf}
-	\caption{Máquina de estados do Cliente Receptor.}
+	\caption{Máquina de estados do Servidor.}
 	\label{fig:Servidor}
 \end{figure}
 
@@ -121,41 +121,44 @@ a Figura \ref{fig:Servidor} apresenta sua máquina de estados.
 O protocolo define três tipos de mensagens,
 {\tt Notificação}, {\tt Listagem} e {\tt Registro}.
 Cada grupo de mensagens são usadas dentro de um mesmo contexto e compartilham o padrão de cabeçalho,
-todo cabeçalho começa com um cabo de {\bf Código} de 1 bytes usado para identificar o tipo da mensagem.
-Também é padronizado o tamanho dos "nomes" utilizados nos corpos das mensagens,
+todo cabeçalho começa com um campo de {\bf Código} de 1 byte usado para identificar o tipo da mensagem.
+Também é padronizado o tamanho dos "nomes", utilizados identificar usuários,
 sendo estes uma sequência de 16 caracteres de 8 bits (16 bytes no total).
 
 Mensagens do tipo {\tt Notificação} representam o principal tipo de mensagens enviadas no sistema.
-Elas possuem um cabeçalho de 16 bits e corpo variável:
+Elas possuem um cabeçalho de 32 bits e corpo variável:
 \begin{itemize}
 \item Cabeçalho:
 	\begin{itemize}
-	\item {\bf Código} - 1 byte.
-	\item {\bf Código Receptor} - 11 bytes.
-	\item {\bf Timestamp} - 4 bytes.
+	\item {\bf Código} - 1 byte;
+	\item {\bf Tamanho} - 8 bytes;
+	\item {\bf Código Receptor} - 2 bytes;
+	\item {\bf Timestamp} - 4 bytes;
+	\item {\bf Nome do Emissor} - 16 byte.
 	\end{itemize}
 \item Corpo:
 	\begin{itemize}
-	\item {\bf Nome do Emissor} - 16 byte.
 	\item {\bf Texto} - Variável.
 	\end{itemize}
 \end{itemize}
 O campo {\bf Código} representa o tipo da mensagem e deve sempre conter 078 (ASCII correspondente à 'N').
-{\bf Código Remente} é o identificar do remente da notificação no servidor,
-cada servidor pode então indexar até 2048 receptores.
+{\bf Tamanho} indica o tamanho total do {\bf Texto} da notificação.
+{\bf Código Receptor} é o identificador do destinatário da notificação no servidor,
+cada servidor pode então indexar até 65536 ($2^{16}$) receptores.
 {\bf Timestamp} é o horário de envio da notificação no padrão Unix.
-O corpo da mensagem deve, por fim, começar com o {\bf Nome do Emissor} seguido então pelo {\bf Texto} da notificação.
+Por fim, o pacote contém o {\bf Nome do Emissor} seguido então pelo {\bf Texto} da notificação.
 
 Mensagens do tipo {\tt Listagem} são usadas para informar emissores dos receptores disponíveis.
-Possuem cabeçalho de 12 bits e dois subtipos:
+Possuem cabeçalho de 5 bytes e dois subtipos:
 {\tt Solicitação}, que são enviadas por emissores;
 e {\tt Resposta}, enviada por servidores.
 Mensagens de {\tt Listagem} tem a seguinte organização:
 \begin{itemize}
 \item Cabeçalho:
 	\begin{itemize}
-	\item {\bf Código} - 1 byte.
-	\item {\bf Número de usuários} - 11 bytes.
+	\item {\bf Código} - 1 byte;
+	\item {\bf Número de usuários} - 2 bytes;
+	\item {\bf Offset} - 2 bytes.
 	\end{itemize}
 \item Corpo em {\tt Solicitação}:
 	\begin{itemize}
@@ -163,33 +166,27 @@ Mensagens de {\tt Listagem} tem a seguinte organização:
 	\end{itemize}
 \item Corpo em {\tt Resposta}:
 	\begin{itemize}
-	\item {\bf Lista de usuários} (Código e nome) - 27 bytes por par.
+	\item {\bf Lista de usuários} (Código e nome) - 18 bytes por par.
 	\end{itemize}
 \end{itemize}
 O campo {\bf Código} deve sempre conter 076 (ASCII correspondente à 'L').
 Na {\tt Solicitação}, o {\bf Número de usuários} contém o número máximo de usuários que se deseja receber;
 já {\tt Resposta}, o campo contém o número de usuários retornados na mensagem.
+O {\bf Offset} é usado na {\tt Solicitação} para controlar quais usuários pegar, se for maior ou igual ao número total de usuários no servidor a {\tt Resposta} é enviada sem nenhum usuário. 
 
-Mensagens de {\tt Registro} são usados no início de uma nova conexão de um receptor.
-Estes cabeçalhos possuem 12 bits e três subtipos:
-{\tt Solicitação}, {\tt Confirmação} e {\tt Desconexão}.
+Mensagens de {\tt Registro} são usados no início de uma nova conexão de um receptor ao servidor.
+Estas mensagens possuem um tamanho total de 20 bytes e 2 subtipos:
+{\tt Solicitação} e {\tt Resposta}.
 \begin{itemize}
-\item Cabeçalho:
-	\begin{itemize}
-	\item {\bf Código} - 1 byte.
-	\item {\bf Código Receptor} - 11 bytes.
-	\end{itemize}
-\item Corpo em {\tt Confirmação}:
-	\begin{itemize}
-	\item {\bf Retorno} - 1 bytes.
-	\end{itemize}
+\item {\bf Código} - 1 byte.
+\item {\bf Código Receptor} - 2 bytes.
+\item {\bf Retorno} - 1 bytes.
+\item {\bf Nome Receptor} - 16 bytes.
 \end{itemize}
-O campo {\bf Código} deve conter 082 em mensagens de {\tt Solicitação} e {\tt Confirmação},
-ou 068 em mensagens de {\tt Desconexão} (ASCII correspondente à `R' e `D' respectivamente).
+O campo {\bf Código} deve sempre conter 082 (ASCII correspondente à `R').
 Na {\tt Solicitação} o campo {\bf Código Receptor} é usado como índice preferível,
-e na {\tt Confirmação} o índice ao qual o Receptor foi alocado é informado no {\bf Código Receptor},
-ambas mensagens de {\tt Solicitação} e {\tt Confirmação} não possuem corpo, apenas o cabeçalho.
-O campo {\bf Retorno} na {\tt Confirmação} contem 0 caso a conexão seja bem sucedida, ou um valor de erro caso contrário.
+e na {\tt Resposta} o índice ao qual o Receptor foi efetivamente alocado é informado no {\bf Código Receptor}.
+O campo {\bf Retorno} na {\tt Confirmação} contem o resultado da operação,
 {\bf Retorno} pode assumir os seguintes valores:
 \begin{itemize}
 \item 0 - Conexão bem sucedida no endereço requirido.
