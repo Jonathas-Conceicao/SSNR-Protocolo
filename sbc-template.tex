@@ -10,7 +10,7 @@
 \usepackage[brazil]{babel}
 \usepackage[utf8]{inputenc}
 
-\title{Protocolo Sistema Simples de Notificação Remota}
+\title{Protocolo Sistema Simples de Notificação Remota (SSNR)}
 
 \author{
 	Jonathas Augusto de Oliveira Conceição\inst{1}
@@ -39,7 +39,7 @@
 \section{Introdução}
 %%=========================================================================================
 
-O Sistema Simples de Notificação Remota
+O Sistema Simples de Notificação Remota (SSNR)
 é um protocolo de notificações distribuída em modelo cliente-servidor.
 No sistema a comunicação é feita por meio de um servidor que contem a identificação de receptores,
 e quando requisitado, repassa a notificação ao destinatário correspondente.
@@ -58,7 +58,7 @@ O servidor então tem três funcionalidades principais:
 O artigo é organizado da seguinte forma:
 A Seção \ref{sec:MaquinaDeEstados} apresenta as máquinas de estados do cliente emissor, cliente receptor e do servidor;
 na Seção \ref{sec:Mensagens} todos os tipos de mensagens e seus cabeçalhos são apresentados;
-por fim, a Seção \ref{sec:Conclusao} conclui apresentado um caso de uso do protocolo.
+por fim, a Seção \ref{sec:Conclusao} conclui apresentado um caso de uso do SSNR.
 
 %%=========================================================================================
 \section{Máquina de Estados}\label{sec:MaquinaDeEstados}
@@ -76,18 +76,19 @@ Os componentes da transição são separados por um traço vertical,
 o evento sempre se encontra acima do traço e
 a ação a ser tomada se encontra abaixo.
 
-O Cliente Emissor funciona através de trocas de mensagens com uma conexão que não fica constantemente aberta com o servidor.
+O Cliente Emissor funciona através de trocas de mensagens com uma conexão TCP não-persistente com o servidor.
 Ele pode solicitar a lista atual de usuários conectados ou enviar uma mensagem para um usuário.
 A Figura \ref{fig:Emissor} apresenta a máquina de estados do cliente emissor.
 
-O receptor, por sua vez, tenta se conectar à um servidor e,
+O receptor, por sua vez, tenta se conectar à um servidor usando uma conexão TCP persistente e,
 se bem sucedido,
 fica à escuta de notificações.
 Sua máquina de estados é apresentada na Figura \ref{fig:Receptor}.
 
 O servidor, uma vez iniciado,
 aloca uma tabela para indexar os receptores e fica à espera de mensagens.
-Caso receba uma mensagem de notificação ele encontra o receptor na tabela a encaminha;
+Caso receba uma mensagem de notificação ele encontra o receptor na tabela a encaminha,
+se o receptor não for encontrado a mensagem é descartada;
 ele também deve enviar a tabela atual a qualquer receptor que faça a solicitação;
 e cadastra novos receptores de acordo com a requisição e a disponibilidade.
 Todas os tratamentos do servidor a requisições são feitos em {\it Threads} separadas que compartilham a tabela de receptores,
@@ -118,8 +119,8 @@ a Figura \ref{fig:Servidor} apresenta sua máquina de estados.
 \section{Mensagens}\label{sec:Mensagens}
 %%=========================================================================================
 
-O protocolo define três tipos de mensagens,
-{\tt Notificação}, {\tt Listagem} e {\tt Registro}.
+O SSNR define quatro tipos de mensagens,
+{\tt Notificação}, {\tt Listagem}, {\tt Registro} e {\tt Ping}.
 Cada grupo de mensagens são usadas dentro de um mesmo contexto e compartilham o padrão de cabeçalho,
 todo cabeçalho começa com um campo de {\bf Código} de 1 byte usado para identificar o tipo da mensagem.
 Também é padronizado o tamanho dos "nomes", utilizados identificar usuários,
@@ -195,6 +196,13 @@ O campo {\bf Retorno} na {\tt Confirmação} contem o resultado da operação,
 \item 4 - Conexão recusada, servidor lista negra.
 \item 128 - Erro não informado.
 \end{itemize}
+
+Por fim, a mensagem de {\tt Ping} consiste apenas da repetição de dois bytes com valor 80
+(código ASCII para 'P').
+Mensagens de Ping são enviadas pelo servidor a todos os Receptores conectados sempre que
+há necessidade de conferir se a conexão ainda é válida.
+{\tt Ping} é enviado sempre que um novo registro é requirido para verificar disponibilidade de índices;
+ele também é enviado quando uma listagem é requirida para evitar a listagem de receptores desconectados.
 
 %%=========================================================================================
 \section{Conclusão}\label{sec:Conclusao}
